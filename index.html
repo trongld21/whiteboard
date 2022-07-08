@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Whiteboard</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="main">
+      <div class="control">
+        <input type="color" id="color" name="color" onchange="getThing()" />
+        <input
+          type="range"
+          min="1"
+          max="200"
+          id="number"
+          value="6"
+          name="number"
+          onchange="getThing()"
+        />
+        <input type="button" value="Clear" id="clear" onclick="clearAll()" />
+
+        <input type="file" id="imageInput" accept="image" />
+      </div>
+      <canvas id="whiteboard"></canvas>
+    </div>
+
+    <script type="text/javascript">
+      var whiteboard = document.getElementById("whiteboard");
+      whiteboard.width = window.innerWidth;
+      whiteboard.height = window.innerHeight;
+      var ctx = whiteboard.getContext("2d");
+
+      let imgInput = document.getElementById("imageInput");
+      imgInput.addEventListener("change", function (e) {
+        if (e.target.files) {
+          let imageFile = e.target.files[0];
+          var reader = new FileReader();
+          reader.readAsDataURL(imageFile);
+          reader.onloadend = function (e) {
+            var myImage = new Image();
+            myImage.src = e.target.result;
+            myImage.onload = function (ev) {
+              ctx.drawImage(myImage, 0, 0);
+              let imgData = whiteboard.toDataURL("image/jpeg", 0.75);
+            };
+          };
+        }
+      });
+
+      var drawing;
+      function getThing() {
+        var color_name = document.getElementById("color").value;
+        var size = document.getElementById("number").value;
+        return {
+          color: color_name,
+          size: size,
+        };
+      }
+
+      function startDraw() {
+        drawing = true;
+      }
+      function stopDraw() {
+        drawing = false;
+        ctx.beginPath();
+      }
+      function clearAll() {
+        whiteboard.width = whiteboard.width;
+      }
+      function Draw(e) {
+        let object = getThing();
+        if (!drawing) return;
+        ctx.strokeStyle = object.color;
+        ctx.lineWidth = object.size;
+        ctx.lineCap = "round";
+        ctx.lineTo(e.clientX, e.clientY);
+        ctx.moveTo(e.clientX, e.clientY);
+        ctx.stroke();
+      }
+
+      whiteboard.addEventListener("mousedown", startDraw);
+      whiteboard.addEventListener("mouseup", stopDraw);
+      whiteboard.addEventListener("mousemove", Draw);
+    </script>
+  </body>
+</html>

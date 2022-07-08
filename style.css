@@ -1,0 +1,16 @@
+.main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* flex-direction: column; */
+}
+
+.control {
+    position: fixed;
+    top:0;
+}
+
+canvas {
+    overflow: hidden;
+    border: 1px solid #000;
+}
